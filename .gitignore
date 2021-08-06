@@ -1,0 +1,13 @@
+*.out
+*.exe
+*.cppout
+*.cout
+
+.vscode/*
+*.json
+
+temp/*
+
+*.segy
+*.dat
+*.sgy
