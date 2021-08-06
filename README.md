@@ -28,9 +28,9 @@ The three files are also avaliable in [**Releases**](https://github.com/JintaoLe
 
 ### Run
 
-The usage of `printTextHeader`, `scan` and `convertToDat` see [**readSegy**](https://github.com/JintaoLee-Roger/segyConvert/readSegy/README.md) 
+The usage of `printTextHeader`, `scan` and `convertToDat` see [**readSegy**](readSegy/README.md) 
 
-The usage of `convertToSegy` see [**addSegy**](https://github.com/JintaoLee-Roger/segyConvert/addSegy/README.md)
+The usage of `convertToSegy` see [**addSegy**](https://github.com/addSegy/README.md)
 
 
 ### TODO List
