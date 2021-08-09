@@ -24,7 +24,7 @@ g++ -o convertToDat convertToDat.cpp segy.cpp
 g++ -o convrtToSegy addSegy.cpp convrtToSegy.cpp
 ```
 
-The three files are also avaliable in [**Releases**](https://github.com/JintaoLee-Roger/segyConvert/releases)
+The four files are also avaliable in [**Releases**](https://github.com/JintaoLee-Roger/segyConvert/releases)
 
 ### Run
 
