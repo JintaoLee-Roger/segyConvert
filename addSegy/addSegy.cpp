@@ -178,12 +178,14 @@ void AddSegy::initialTraceHeader(){
     replaceStr(traceheader, (int32_t)1, 24);
     replaceStr(traceheader, (int32_t)1, 28);
     replaceStr(traceheader, (int16_t)1, 34);
-    replaceStr(traceheader, (int16_t)-10, 68);
+    replaceStr(traceheader, (int16_t)1, 68);
     replaceStr(traceheader, (int16_t)-100, 70);
     replaceStr(traceheader, (int16_t)1, 88);
     replaceStr(traceheader, (int16_t)_key.ns, 114);
     replaceStr(traceheader, (int16_t)_key.dt, 116);
     replaceStr(traceheader, (int16_t)1, 124);
+    replaceStr(traceheader, (int16_t)1, 132);
+    replaceStr(traceheader, (int16_t)1, 138);
     replaceStr(traceheader, (int32_t)_key.sinline, 188);
     replaceStr(traceheader, (int32_t)_key.sxline, 192);
 }
@@ -197,6 +199,8 @@ void AddSegy::updateTraceHeader(size_t inum, size_t xnum, size_t x, size_t y){
     replaceStr(traceheader, (int32_t)xnum, 192);
     replaceStr(traceheader, (int32_t)x, 72);
     replaceStr(traceheader, (int32_t)y, 76);
+    replaceStr(traceheader, (int32_t)x, 180);
+    replaceStr(traceheader, (int32_t)y, 184);
 }
 
 void AddSegy::replaceStr(char* t, const std::string s, size_t start, size_t len){
