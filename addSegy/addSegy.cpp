@@ -84,7 +84,8 @@ void AddSegy::convert(){
     int64_t loc = 0;
     for (int i = _key.sinline; i < (_key.sinline+_key.ninline); ++i){
         for (int j = _key.sxline; j < (_key.sxline+_key.nxline); ++j){
-            updateTraceHeader(i, j, i*10, j*10);
+            // x and y interval must lager than 100 to be read by AASPI
+            updateTraceHeader(i, j, i*100, j*100); 
             out_.write(&traceheader[0], 240);
             readTrace(trace, loc);
             out_.write((char *)&trace[0], _key.ns*sizeof(float));
@@ -190,7 +191,7 @@ void AddSegy::initialTraceHeader(){
     replaceStr(traceheader, (int32_t)_key.sxline, 192);
 }
 
-void AddSegy::updateTraceHeader(size_t inum, size_t xnum, size_t x, size_t y){
+void AddSegy::updateTraceHeader(int32_t inum, int32_t xnum, int32_t x, int32_t y){
     replaceStr(traceheader, (int32_t)inum, 4);
     replaceStr(traceheader, (int32_t)xnum, 8);
     replaceStr(traceheader, (int32_t)inum, 16);

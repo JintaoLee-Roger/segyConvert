@@ -57,7 +57,7 @@ class AddSegy{
 public:
     char textheader[3200] = 
 "C01 SEGY OUTPUT FROM AddSegy by Jintao Li (CIG, USTC, 2021)                     "\
-"C02 github: https://github.com/JintaoLee-Roger/readSegy                         "\
+"C02 github: https://github.com/JintaoLee-Roger/segyConvert                      "\
 "C03                                                                             "\
 "C04 Name: OUT_AddSegy                                                           "\
 "C05 Type: 3D seismic  Created Time: 2021/08/04T15:02                            "\
@@ -119,7 +119,7 @@ private:
     void updateTextHeader();
     void updateBinaryHeader();
     void initialTraceHeader();
-    void updateTraceHeader(size_t inum, size_t xnum, size_t x, size_t y);
+    void updateTraceHeader(int32_t inum, int32_t xnum, int32_t x, int32_t y);
     void replaceStr(char *t, const std::string s, size_t start, size_t len);
     template <typename T> void replaceStr (char *t, T u, size_t start);
     char getEBCIDFromASCII(char c);
