@@ -27,7 +27,7 @@ g++ -o scan scan.cpp segy.cpp
 g++ -o convertToDat convertToDat.cpp segy.cpp
 
 # addSegy
-g++ -o convrtToSegy addSegy.cpp convrtToSegy.cpp
+g++ -o convertToSegy addSegy.cpp convertToSegy.cpp
 ```
 
 这四个文件也可以直接在 [**Releases**](https://github.com/JintaoLee-Roger/segyConvert/releases) 中下载。

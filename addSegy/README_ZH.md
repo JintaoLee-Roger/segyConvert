@@ -16,7 +16,7 @@
 ### 编译
 
 ```shell
-g++ -o convrtToSegy addSegy.cpp convrtToSegy.cpp
+g++ -o convertToSegy addSegy.cpp convertToSegy.cpp
 ```
 
 文件 `convertTosegy` 可以在 [**Releases**](https://github.com/JintaoLee-Roger/segyConvert/releases) 中直接下载。

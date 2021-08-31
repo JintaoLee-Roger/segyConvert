@@ -28,7 +28,7 @@ g++ -o scan scan.cpp segy.cpp
 g++ -o convertToDat convertToDat.cpp segy.cpp
 
 # addSegy
-g++ -o convrtToSegy addSegy.cpp convrtToSegy.cpp
+g++ -o convertToSegy addSegy.cpp convertToSegy.cpp
 ```
 
 The four files are also avaliable in [**Releases**](https://github.com/JintaoLee-Roger/segyConvert/releases)

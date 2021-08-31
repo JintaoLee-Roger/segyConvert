@@ -16,7 +16,7 @@ About SEGY-Y format: [SEG-Y rev 1](https://seg.org/Portals/0/SEG/News%20and%20Re
 ### Compile
 
 ```shell
-g++ -o convrtToSegy addSegy.cpp convrtToSegy.cpp
+g++ -o convertToSegy addSegy.cpp convertToSegy.cpp
 ```
 
 The file `convertTosegy` is also avaliable in [**Releases**](https://github.com/JintaoLee-Roger/segyConvert/releases)
