@@ -2,30 +2,30 @@
 
 <table>
   <tr>
-    <td><b>English</b></td>
-    <td><a href="./README_ZH.md">中文</a></td>
+    <td><a href="./README.md">English</a></td>
+    <td><b>中文</b></td>
   </tr>
 </table>
 
-A tool with C++ to convert 3D seismic binary data to SEG-Y format.
+一个 C++ 写的将没有道头信息的二进制格式三维地震数据添加道头信息，转化为segy格式的三维地震数据。
 
-About SEGY-Y format: [SEG-Y rev 1](https://seg.org/Portals/0/SEG/News%20and%20Resources/Technical%20Standards/seg_y_rev1.pdf), [SEG-Y rev 2](https://seg.org/Portals/0/SEG/News%20and%20Resources/Technical%20Standards/seg_y_rev2_0-mar2017.pdf) and [A comparison of all version](https://wiki.seg.org/images/4/42/SEG-Y_bytestream_all_revisions.pdf).
+关于 SEGY-Y 格式: [SEG-Y rev 1](https://seg.org/Portals/0/SEG/News%20and%20Resources/Technical%20Standards/seg_y_rev1.pdf), [SEG-Y rev 2](https://seg.org/Portals/0/SEG/News%20and%20Resources/Technical%20Standards/seg_y_rev2_0-mar2017.pdf) 和 [A comparison of all version](https://wiki.seg.org/images/4/42/SEG-Y_bytestream_all_revisions.pdf).
 
-## Usage
+## 使用
 
-### Compile
+### 编译
 
 ```shell
 g++ -o convrtToSegy addSegy.cpp convrtToSegy.cpp
 ```
 
-The file `convertTosegy` is also avaliable in [**Releases**](https://github.com/JintaoLee-Roger/segyConvert/releases)
+文件 `convertTosegy` 可以在 [**Releases**](https://github.com/JintaoLee-Roger/segyConvert/releases) 中直接下载。
 
 ### Run
 
-Convert a binary file to a segy format file.
+将二进制文件转化为segy格式
 ```shell
-# get help
+# 帮助文档
 ./convertToSegy
 # Usage: convertToSegy infile n1 n2 n3 [outfile dt sxline sinline]
 # param:
@@ -65,6 +65,7 @@ void convert();
 ```
 
 ### TODO List
- - [x] stored in 4-byte IEEE floating-point format
- - [ ] stored in 4-byte IBM floating-point format
+
+- [x] 将 4-byte 的 IBM 浮点数转为 4-byte 的 IEEE 浮点数
+- [ ] 将 4-byte 的 IEEE 浮点数转为 4-byte 的 IBM 浮点数
 

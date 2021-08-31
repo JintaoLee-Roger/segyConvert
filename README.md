@@ -1,5 +1,12 @@
 # segyConvert
 
+<table>
+  <tr>
+    <td><b>English</b></td>
+    <td><a href="./README_ZH.md">中文</a></td>
+  </tr>
+</table>
+
 A tool with C++ to read 3D seismic data in SEG-Y format 
 and convert 3D seismic data in binary format to SEG-Y format.
 

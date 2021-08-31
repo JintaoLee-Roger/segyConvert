@@ -2,21 +2,21 @@
 
 <table>
   <tr>
-    <td><b>English</b></td>
-    <td><a href="./README_ZH.md">中文</a></td>
+    <td><a href="./README.md">English</a></td>
+    <td><b>中文</b></td>
   </tr>
 </table>
 
-A tool with C++ to read 3D seismic data in SEG-Y format.
+一个使用 C++ 写的读取segy格式三维地震数据，并转化为二进制格式的工具，其会先去掉segy文件的道头，然后补全空道，形成一个规则立方体的数据体，并保存为没有道头信息的二进制文件。
 
-About SEGY-Y format: [SEG-Y rev 1](https://seg.org/Portals/0/SEG/News%20and%20Resources/Technical%20Standards/seg_y_rev1.pdf), [SEG-Y rev 2](https://seg.org/Portals/0/SEG/News%20and%20Resources/Technical%20Standards/seg_y_rev2_0-mar2017.pdf) and [A comparison of all version](https://wiki.seg.org/images/4/42/SEG-Y_bytestream_all_revisions.pdf).
+关于 SEGY-Y 格式: [SEG-Y rev 1](https://seg.org/Portals/0/SEG/News%20and%20Resources/Technical%20Standards/seg_y_rev1.pdf), [SEG-Y rev 2](https://seg.org/Portals/0/SEG/News%20and%20Resources/Technical%20Standards/seg_y_rev2_0-mar2017.pdf) 和 [A comparison of all version](https://wiki.seg.org/images/4/42/SEG-Y_bytestream_all_revisions.pdf).
 
-Some code references Google's respository: [segy-stack](https://github.com/google/segy-stack).
+一些代码参考了Google的 [segy-stack](https://github.com/google/segy-stack).
 
 
-## Usage
+## 使用
 
-### Compile
+### 编译
 
 ```shell
 g++ -o printTextHeader segy.cpp printTextHeader.cpp
@@ -24,13 +24,13 @@ g++ -o scan scan.cpp segy.cpp
 g++ -o convertToDat convertToDat.cpp segy.cpp
 ```
 
-The three files are also avaliable in [**Releases**](https://github.com/JintaoLee-Roger/segyConvert/releases)
+这三个文件可以在 [**Releases**](https://github.com/JintaoLee-Roger/segyConvert/releases) 中直接下载。
 
-### Run
+### 运行
 
-Print the 3200 bytes text header.
+输出 3200 bytes 的文本格式道头
 ```shell
-# get help
+# 查看帮助文档
 ./printTextHeader
 # Help: print the 3200 bytes text header of a segy format file 
 # Usage: printTextHeader infile 
@@ -40,9 +40,9 @@ Print the 3200 bytes text header.
 ./printTextHeader /home/user/Documents/test.segy
 ```
 
-Scan a segy file, obtain the range of in-line and cross-line numbers.
+扫描一个segy文件, 获取 in-line 和 cross-line 的范围
 ```shell
-# get help
+# 查看帮助文档
 ./scan
 # Help: Scan a segy file, obtain the range of in-line and cross-line numbers. 
 # Usage: scan infile [iloc xloc] 
@@ -51,17 +51,18 @@ Scan a segy file, obtain the range of in-line and cross-line numbers.
 #        iloc (opt): location for inline number in trace header, e.g. 5
 #        xloc (opt): location for crossline number in trace header, e.g. 21
 
-# don't know the location of in-line and cross-line.
+# 不知道 in-line 和 cross-line 在 trace header 中的存储位置, 
+# 会先猜测 in-line 和 cross-line 的存储位置
 ./scan /home/user/Documents/test.segy
 
-# know the location, such as in-line in 5, cross-line in 21
+# 知道存储位置, 比如 in-line: 5, cross-line: 21
 ./scan /home/user/Documents/test.segy 5 21
 ```
 
-Convert a segy file to a binary file without any header. If there are some 
-missing traces, `convertToDat` will pad them with 0.
+将segy格式的三维地震数据转化为没有道头信息的二进制格式数据. 
+如果segy格式的数据缺失了某些地震道，`convertToDat` 将会用 0 填充。
 ```shell
-# get help
+# 查看帮助文档
 ./convertToDat
 # Help: Convert segy format file to binary file.
 # Usage: convertToDat infile outfile [iloc xloc [inmin inmax xmin xmax]]
@@ -78,11 +79,12 @@ missing traces, `convertToDat` will pad them with 0.
 
 ./convertToDat /home/user/Documents/test.segy out.dat
 
-# know the location, such as in-line in 5, cross-line in 21
+# 知道存储位置, 比如 in-line: 5, cross-line: 21
 ./convertToDat /home/user/Documents/test.segy out.dat 5 21
 
-# know the location and range, such as in-line in 5, cross-line in 21,
-# in-line range: 1000-1569, cross-line range: 1-1835  
+# 知道存储位置, 比如 in-line: 5, cross-line: 21
+# 并知道 in-line 和 cross-line 的范围, 
+# 比如 in-line range: 1000-1569, cross-line range: 1-1835  
 ./convertToDat /home/user/Documents/test.segy out.dat 5 21 1000 1569 1 1835
 ```
 
