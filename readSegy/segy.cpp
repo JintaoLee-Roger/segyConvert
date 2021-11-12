@@ -47,7 +47,7 @@ SegyFile::~SegyFile(){
 }
 
 void SegyFile::printTextHeader(){
-    char line[80];
+    char line[81] = {0}; // initial and line[80] = '\0' in c++'s string
     bool isEBCDIC = isTextInEBCDICFormat(&textheader[0]);
     for (int i = 0, j = 0; i < 3200; ++i, ++j){
         j = j % 80;
@@ -58,8 +58,9 @@ void SegyFile::printTextHeader(){
             line[j] = textheader[i];
         }
 
-        if ((i+1)%80 == 0)
-            std::cout << line << std::endl;
+        if ((i+1)%80 == 0){
+            std::cout << line <<  std::endl;
+        }
     }
 }
 
@@ -99,8 +100,9 @@ void SegyFile::guessLoc(){
             break;
         }
     }
-    std::cout << "Guess Location: Inline: " << 
-        th.inlLoc+1 << "  Crossline: " << th.xlLoc+1 << std::endl;
+    std::cout << "Guess Location: Inline: " << th.inlLoc + 1 
+              << "  Crossline: " << th.xlLoc+1 
+              << std::endl << std::endl;
 }
 
 void SegyFile::setParameters(size_t iloc, size_t xloc){
@@ -145,6 +147,7 @@ void SegyFile::toDat(const std::string outfile){
     uintmax_t start = 3600 + binaryHeader_.numExHeader * 3200;
     size_t iline = swap_endian<int32_t>(readData<int32_t>(start + th.inlLoc));
     size_t xline = swap_endian<int32_t>(readData<int32_t>(start + th.xlLoc));
+    size_t process = 0;
     for (size_t i = th.inmin; i <= th.inmax; ++i){
         for (size_t j = th.xlmin; j <= th.xlmax; ++j){
             if (iline == i && xline == j){
@@ -160,9 +163,11 @@ void SegyFile::toDat(const std::string outfile){
                 writeTrace(trace);
                 idx2++;
             }
-            if (0 == (idx1 + idx2) % 1000000){
+            if (0 == (idx1 + idx2) % (totalT / 10)){
+                process++;
                 std::cout << "Process: [ " << (idx1 + idx2) << " / " 
-                          << totalT << " ]" << std::endl;
+                          << totalT << " ] ( " << process << " / 10 )" 
+                          << std::endl;
             }
         }
     }
@@ -185,6 +190,13 @@ void SegyFile::toDat(const std::string outfile){
                   << "Totally, " << totalT << " traces have been written to the binary file."
                   << std::endl;
     }
+
+    std::cout << std::endl 
+              << "Out file information: \n\tdt: " << binaryHeader_.dt 
+              << "\n\tn1(ns): " << binaryHeader_.ns 
+              << "\n\tn2(xline): " << th.xlmax - th.xlmin + 1
+              << "\n\tn3(inline): " << th.inmax - th.inmin + 1
+              << std::endl; 
 }
 
 void SegyFile::readTrace(std::vector<float>& trace, int64_t loc){
@@ -229,6 +241,12 @@ void SegyFile::scan(){
     }
     std::cout << "inline range: " << th.inmin << " - " << th.inmax << std::endl
               << "xline range:  " << th.xlmin << " - " << th.xlmax << std::endl;
+
+    std::cout << "n1(ns), n2, n3 = " << binaryHeader_.ns 
+              << ", " << th.xlmax - th.xlmin + 1
+              << ", " << th.inmax - th.inmin + 1 
+              << std::endl << std::endl;
+
 }
 
 bool SegyFile::isTextInEBCDICFormat(const char* text){
