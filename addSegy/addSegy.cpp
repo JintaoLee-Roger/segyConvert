@@ -17,6 +17,7 @@
 #include <vector>
 #include <ctime>
 #include <iomanip>
+#include <limits>
 
 AddSegy::AddSegy(const std::string infile, 
             const int ns, const int nxline, const int ninline){
@@ -219,11 +220,56 @@ void AddSegy::readTrace(std::vector<float>& trace, int64_t loc){
 
     // TODO: complete ieee format to ibm format
     for(auto &i : trace){
-        // if (1 == _key.dtype){
-        //     i = ieee_to_ibm(i, true);
-        // }
-        // else {
-            i = swap_endian(i);
-        // }
+        if (1 == _key.dtype){
+            i = swap_endian<float>(ieee_to_ibm(i, true));
+        }
+        else {
+            i = swap_endian<float>(i);
+        }
     }   
+}
+
+float AddSegy::ieee_to_ibm(float value, bool is_litte_endian_input){
+    if (!is_litte_endian_input)
+        value = swap_endian<float>(value);
+    
+    int32_t* addr = reinterpret_cast<int32_t*>(&value);
+    int32_t int_val = *addr;
+
+    int32_t sign = int_val >> 31;
+    int32_t exponent = ((int_val & 0x7f800000) >> 23) - 127;
+    int32_t fraction = int_val & 0x007fffff;
+
+    if ((int_val & 0x7fffffff) == 0){
+        return sign ? -0.0f : 0.0f;
+    }
+
+    fraction <<= 1; // 24 bits 
+
+    fraction |= 0x01000000; // add 1, 25 bits 
+
+    // convert 2-base to 16-base 
+    fraction <<= (exponent & 3); // 28 bits
+    exponent >>= 2;
+
+    if (fraction & 0x0f000000){ // 24 bits
+        fraction >>= 4;
+        exponent += 1;
+    }
+
+    exponent += 64;
+
+    int32_t ibm_value;
+    if (exponent > 127) {
+        return (sign ? -std::numeric_limits<float>::max()
+                    : std::numeric_limits<float>::max());
+    }
+    else if (exponent <= 0)
+        ibm_value = (sign << 31) | fraction;
+    else
+        ibm_value = (sign << 31) | (exponent << 24) | fraction;
+
+    float* float_addr = reinterpret_cast<float*>(&ibm_value);
+
+    return *float_addr;
 }

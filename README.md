@@ -43,4 +43,5 @@ The usage of `convertToSegy` see [**addSegy**](https://github.com/JintaoLee-Roge
 ### TODO List
 
 - [x] 4-byte IBM floating-point to 4-byte IEEE floating-point
-- [ ] 4-byte IEEE floating-point to 4-byte IBM floating-point
+- [x] 4-byte IEEE floating-point to 4-byte IBM floating-point
+- [ ] add python API

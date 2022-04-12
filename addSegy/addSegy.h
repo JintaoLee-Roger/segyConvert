@@ -127,7 +127,7 @@ private:
     void writeTrace();
     template <typename T> T swap_endian(T u);
     // TODO: complete 4-byte ieee floating-point to 4-byte ibm floating-point 
-    // float ieee_to_ibm(float value, bool is_litte_endian_input);
+    float ieee_to_ibm(float value, bool is_litte_endian_input);
 
 };
 

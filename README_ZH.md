@@ -42,4 +42,5 @@ g++ -o convertToSegy addSegy.cpp convertToSegy.cpp
 ### TODO List
 
 - [x] 将 4-byte 的 IBM 浮点数转为 4-byte 的 IEEE 浮点数
-- [ ] 将 4-byte 的 IEEE 浮点数转为 4-byte 的 IBM 浮点数
+- [x] 将 4-byte 的 IEEE 浮点数转为 4-byte 的 IBM 浮点数
+- [ ] 增加 python 的调用接口

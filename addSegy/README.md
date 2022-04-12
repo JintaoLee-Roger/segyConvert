@@ -65,6 +65,8 @@ void convert();
 ```
 
 ### TODO List
- - [x] stored in 4-byte IEEE floating-point format
- - [ ] stored in 4-byte IBM floating-point format
+
+- [x] stored in 4-byte IEEE floating-point format
+- [x] stored in 4-byte IBM floating-point format
+- [ ] add python API
 
