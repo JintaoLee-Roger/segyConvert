@@ -218,7 +218,6 @@ void AddSegy::readTrace(std::vector<float>& trace, int64_t loc){
     in_.seekg(loc, std::ios::beg);
     in_.read((char *)&trace[0], _key.ns * sizeof(float));
 
-    // TODO: complete ieee format to ibm format
     for(auto &i : trace){
         if (1 == _key.dtype){
             i = swap_endian<float>(ieee_to_ibm(i, true));
