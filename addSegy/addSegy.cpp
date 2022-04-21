@@ -103,7 +103,7 @@ char AddSegy::getEBCIDFromASCII(char c){
 }
 
 void AddSegy::writeTextHeader(){
-    char eb_textheader[3200];
+    char eb_textheader[3201];
     for (int i = 0; i < 3200; ++i){
         eb_textheader[i] = getEBCIDFromASCII(textheader[i]);
     }

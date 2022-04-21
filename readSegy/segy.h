@@ -44,6 +44,7 @@ struct traceHeader{
 
 // A key map that convert EBCDIC to ASCII format
 const std::map<unsigned char, char> kEBCDICtoASCIImap = {
+    {64, ' '},
     {75, '.'},  {76, '<'},   {77, '('},  {78, '+'},  {79, '|'},  {80, '&'},
     {90, '!'},  {91, '$'},   {92, '*'},  {93, ')'},  {94, ';'},  {96, '-'},
     {97, '/'},  {106, '|'},  {107, ','}, {108, '%'}, {109, '_'}, {110, '>'},

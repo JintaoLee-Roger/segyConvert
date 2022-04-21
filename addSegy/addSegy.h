@@ -35,6 +35,7 @@ struct keys{
 
 
 const std::map<char, unsigned char> kASCIItoEBCDICmap = {
+    {' ', 64},
     {'.', 75},  {'<', 76},   {'(', 77},  {'+', 78},  {'|', 79},  {'&', 80},
     {'!', 90},  {'$', 91},   {'*', 92},  {')', 93},  {';', 94},  {'-', 96},
     {'/', 97},  {'|', 106},  {',', 107}, {'%', 108}, {'_', 109}, {'>', 110},
@@ -55,7 +56,7 @@ const std::map<char, unsigned char> kASCIItoEBCDICmap = {
 
 class AddSegy{
 public:
-    char textheader[3200] = 
+    char textheader[3201] = 
 "C01 SEGY OUTPUT FROM AddSegy by Jintao Li (CIG, USTC, 2021)                     "\
 "C02 github: https://github.com/JintaoLee-Roger/segyConvert                      "\
 "C03                                                                             "\
@@ -95,7 +96,7 @@ public:
 "C37                                                                             "\
 "C38                                                                             "\
 "C39                                                                             "\
-"C40 END EBCDIC                                                                 ";
+"C40 END EBCDIC                                                                  ";
 
     char binaryheader[400] = {0};
     char traceheader[240] = {0};
