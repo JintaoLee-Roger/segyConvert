@@ -81,21 +81,23 @@ void SegyFile::guessLoc(){
     size_t inline_loc[3] = {4, 8, 188};
     size_t xline_loc[3] = {16, 20, 192};
     uintmax_t start1 = 3600 + 3200 * binaryHeader_.numExHeader;
-    uintmax_t start2 = start1 + 240 + binaryHeader_.ns*4;
+    // uintmax_t start2 = start1 + 240 + binaryHeader_.ns*4;
     uintmax_t start3 = start1 + (240 + binaryHeader_.ns*4)*(binaryHeader_.totalTrace-1);
 
     for (size_t i = 0; i < 3; ++i){
         int inl1 = swap_endian<int32_t>(readData<int32_t>(start1 + inline_loc[i]));
         int inl2 = swap_endian<int32_t>(readData<int32_t>(start3 + inline_loc[i]));
-        if (inl1 != inl2){
+        // printf("inl1: %d, inl2: %d\n", inl1, inl2);
+        if (inl1 != inl2 && (inl2 - inl1) < 10000){
             th.inlLoc = inline_loc[i];
             break;
         }
     }
     for (size_t i = 0; i < 3; ++i){
         int xl1 = swap_endian<int32_t>(readData<int32_t>(start1 + xline_loc[i]));
-        int xl2 = swap_endian<int32_t>(readData<int32_t>(start2 + xline_loc[i]));
-        if (xl1 != xl2){
+        int xl2 = swap_endian<int32_t>(readData<int32_t>(start3 + xline_loc[i]));
+        // printf("xl1: %d, xl2: %d\n", xl1, xl2);
+        if (xl1 != xl2 && (xl2 - xl1) < 10000){
             th.xlLoc = xline_loc[i];
             break;
         }
