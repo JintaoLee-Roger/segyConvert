@@ -189,8 +189,8 @@ void AddSegy::initialTraceHeader() {
 void AddSegy::updateTraceHeader(int32_t inum, int32_t xnum, int32_t x,
                                 int32_t y) {
     replaceStr(traceheader, (int32_t)inum, 4);
-    replaceStr(traceheader, (int32_t)xnum, 8);
-    replaceStr(traceheader, (int32_t)inum, 16);
+    replaceStr(traceheader, (int32_t)inum, 8);
+    replaceStr(traceheader, (int32_t)xnum, 16);
     replaceStr(traceheader, (int32_t)xnum, 20);
     replaceStr(traceheader, (int32_t)inum, 188);
     replaceStr(traceheader, (int32_t)xnum, 192);
