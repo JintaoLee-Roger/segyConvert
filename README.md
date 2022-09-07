@@ -16,6 +16,7 @@ About SEGY-Y format: [SEG-Y rev 1](https://seg.org/Portals/0/SEG/News%20and%20Re
 
 Some code references Google's respository: [segy-stack](https://github.com/google/segy-stack).
 
+`cmdline.h` is from Tanaka's [cmdline](https://github.com/tanakh/cmdline).
 
 ## Usage
 
@@ -44,4 +45,5 @@ The usage of `convertToSegy` see [**addSegy**](https://github.com/JintaoLee-Roge
 
 - [x] 4-byte IBM floating-point to 4-byte IEEE floating-point
 - [x] 4-byte IEEE floating-point to 4-byte IBM floating-point
+- [ ] Determine whether it is three-dimensional or two-dimensional data
 - [ ] add python API

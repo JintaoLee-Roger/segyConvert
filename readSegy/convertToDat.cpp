@@ -1,61 +1,84 @@
 /*
- * Copyright (c) 2021 Jintao Li. All rights reserved.
+ * Copyright (c) 2022 Jintao Li. All rights reserved.
  * University of Science and Technology of China (USTC),
  * Computational and Interpretation Group (CIG).
  *
  * @author: Jintao Li
- * @version: v0.1
- * @date: 2021-05-29
- * @update: 2021-08-06 Optimized error output
+ * @update: 2022-06-21 add cmdline support
  *
  * @file: convertToDat.cpp
  * @brief: Convert a segy file to a binary file without any header.
  *         If there are some missing traces,
- *         `convertToDat` will pad them with 0.
+ *         `convertToDat` will pad them with a fill number (default 0).
  */
 
+#include <cmath>
 #include <iostream>
 
+#include "cmdline.h"
 #include "segy.h"
 
-int main(int argc, char** argv) {
-    std::string help =
-        "Help: Convert segy format file to binary file.\n"
-        "Usage: convertToDat infile outfile [iloc xloc [inmin inmax xmin xmax]]\n"
-        "Param: \n"
-        "       infile: input segy file name, e.g. RMS.segy \n"
-        "       outfile: output binary file name, e.g. out.dat \n"
-        "       iloc (opt): location for inline number in trace header, e.g. 5\n"
-        "       xloc (opt): location for crossline number in trace header, e.g. 21\n"
-        "       inmin (opt): the minimum number of inline, e.g. 1000 \n"
-        "       inmax (opt): the maximum number of inline, e.g. 1800 \n"
-        "       xmin (opt): the minimum number of crossline, e.g. 50 \n"
-        "       xmax (opt): the maximum number of crossline, e.g. 580 \n"
-        "The more parameters entered, the less time used\n";
+int main(int argc, char **argv) {
+  cmdline::parser args;
+  args.add<std::string>("infile", 'i', "input Segy file name", true);
+  args.add<std::string>("outfile", 'o', "output binary file name", false,
+                        "out.dat");
+  args.add<int>("iloc", '\0', "location for inline number in trace header",
+                false, -1);
+  args.add<int>("xloc", '\0', "location for crossline number in trace header",
+                false, -1);
+  args.add<int>("inmin", '\0', "the mininum number of inline", false, -1);
+  args.add<int>("inmax", '\0', "the maxinum number of inline", false, -1);
+  args.add<int>("xmin", '\0', "the mininum number of crossline", false, -1);
+  args.add<int>("xmax", '\0', "the maxinum number of crossline", false, -1);
+  args.add<std::string>(
+      "fill", 'f',
+      "the number to fill the miss trace, can be any float or nan, or NAN",
+      false, "0.0");
+  args.add("help", 'h', "Convert a segy file to a binary file");
 
-    if (argc == 1) {
-        std::cout << help;
-        exit(1);
-    } else if (!(3 == argc || 5 == argc || 9 == argc)) {
-        std::cout << "Input error! You can enter 2/4/8 parameters." << std::endl
-                  << help;
-        exit(1);
+  std::string brief =
+      "Convert a segy file to a binary file without any header. \nIf there are "
+      "some missing traces, this program will pad them with a fill number "
+      "(default 0). \n";
+
+  args.parse(argc, argv);
+  if (argc == 1 || args.exist("help")) {
+    std::cerr << brief << std::endl;
+    std::cerr << args.usage();
+    return 0;
+  }
+
+  args.parse_check(argc, argv);
+
+  SegyFile segy(args.get<std::string>("infile"));
+
+  if (args.get<int>("iloc") >= 0 && args.get<int>("xloc") >= 0) {
+    if (args.get<int>("inmin") >= 0 && args.get<int>("inmax") >= 0 &&
+        args.get<int>("xmin") >= 0 && args.get<int>("xmax") >= 0) {
+      segy.setParameters(args.get<int>("iloc"), args.get<int>("xloc"),
+                         args.get<int>("inmin"), args.get<int>("inmax"),
+                         args.get<int>("xmin"), args.get<int>("xmax"));
+    } else {
+      segy.setParameters(args.get<int>("iloc"), args.get<int>("xloc"));
     }
+  }
 
-    SegyFile segy(argv[1]);
-
-    if (3 < argc) {
-        size_t inLoc = std::stoi(argv[3]);
-        size_t xLoc = std::stoi(argv[4]);
-        if (5 == argc) {
-            segy.setParameters(inLoc, xLoc);
-        } else if (9 == argc) {
-            size_t inmin = std::stoi(argv[5]);
-            size_t inmax = std::stoi(argv[6]);
-            size_t xmin = std::stoi(argv[7]);
-            size_t xmax = std::stoi(argv[8]);
-            segy.setParameters(inLoc, xLoc, inmin, inmax, xmin, xmax);
-        }
+  float fills;
+  if (args.get<std::string>("fill") == "nan" ||
+      args.get<std::string>("fill") == "NAN") {
+    fills = NAN;
+  } else {
+    try {
+      fills = std::stof(args.get<std::string>("fill"));
+    } catch (std::invalid_argument) {
+      std::cerr << "Invalid number args --fill or -f: "
+                << args.get<std::string>("fill") << std::endl
+                << "Please input a number (e.g. 0, 1.2, -100) or nan or NAN"
+                << std::endl;
+      std::cerr << args.usage();
+      return 0;
     }
-    segy.toDat(argv[2]);
+  }
+  segy.toDat(args.get<std::string>("outfile"), fills);
 }

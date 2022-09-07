@@ -32,58 +32,71 @@ Print the 3200 bytes text header.
 ```shell
 # get help
 ./printTextHeader
-# Help: print the 3200 bytes text header of a segy format file 
-# Usage: printTextHeader infile 
-# param: 
-#        infile: input segy format file name, e.g. RMS.segy.
+# Print the 3200 bytes text header of a segy file.
 
-./printTextHeader /home/user/Documents/test.segy
+# usage: printTextHeader --infile=string [options] ...
+# options:
+#   -i, --infile    input segy file name (string)
+#   -h, --help      print the 3200 bytes text header
+
+./printTextHeader -i /home/user/Documents/test.segy
 ```
 
 Scan a segy file, obtain the range of in-line and cross-line numbers.
 ```shell
 # get help
 ./scan
-# Help: Scan a segy file, obtain the range of in-line and cross-line numbers. 
-# Usage: scan infile [iloc xloc] 
-# param: 
-#        infile: input segy format file name, e.g. RMS.segy 
-#        iloc (opt): location for inline number in trace header, e.g. 5
-#        xloc (opt): location for crossline number in trace header, e.g. 21
+# Scan a segy file, obtain the range of in-line and cross-line numbers.
+
+# usage: scan --infile=string [options] ...
+# options:
+#   -i, --infile    input segy format file name (string)
+#       --iloc      location for inline number in trace header (int [=-1])
+#       --xloc      location for inline number in trace header (int [=-1])
+#   -h, --help      Scan a segy file
 
 # don't know the location of in-line and cross-line.
-./scan /home/user/Documents/test.segy
+./scan -i /home/user/Documents/test.segy
 
 # know the location, such as in-line in 5, cross-line in 21
-./scan /home/user/Documents/test.segy 5 21
+./scan -i /home/user/Documents/test.segy --iloc 5 --xloc 21
 ```
 
 Convert a segy file to a binary file without any header. If there are some 
-missing traces, `convertToDat` will pad them with 0.
+missing traces, `convertToDat` will pad them with `fill`.
 ```shell
 # get help
 ./convertToDat
-# Help: Convert segy format file to binary file.
-# Usage: convertToDat infile outfile [iloc xloc [inmin inmax xmin xmax]]
-# Param: 
-#        infile: input segy file name, e.g. RMS.segy 
-#        outfile: output binary file name, e.g. out.dat 
-#        iloc (opt): location for inline number in trace header, e.g. 5
-#        xloc (opt): location for crossline number in trace header, e.g. 21
-#        inmin (opt): the minimum number of inline, e.g. 1000 
-#        inmax (opt): the maximum number of inline, e.g. 1800 
-#        xmin (opt): the minimum number of crossline, e.g. 50 
-#        xmax (opt): the maximum number of crossline, e.g. 580 
+# Convert a segy file to a binary file without any header.
+# If there are some missing traces, this program will pad them with a fill number (default 0).
+
+# usage: convertToDat --infile=string [options] ...
+# options:
+#   -i, --infile     input Segy file name (string)
+#   -o, --outfile    output binary file name (string [=out.dat])
+#       --iloc       location for inline number in trace header (int [=-1])
+#       --xloc       location for crossline number in trace header (int [=-1])
+#       --inmin      the mininum number of inline (int [=-1])
+#       --inmax      the maxinum number of inline (int [=-1])
+#       --xmin       the mininum number of crossline (int [=-1])
+#       --xmax       the maxinum number of crossline (int [=-1])
+#   -f, --fill       the number to fill the miss trace, can be any float or nan, or NAN (string [=0.0])
+#   -h, --help       Convert a segy file to a binary file
+
 # The more parameters entered, the less time used
 
-./convertToDat /home/user/Documents/test.segy out.dat
+./convertToDat -i /home/user/Documents/test.segy -o out.dat
 
 # know the location, such as in-line in 5, cross-line in 21
-./convertToDat /home/user/Documents/test.segy out.dat 5 21
+./convertToDat -i /home/user/Documents/test.segy -o out.dat --iloc 5 --xloc 21
+
+# fill the missing traces with any float or nan or NAN
+./convertToDat -i /home/user/Documents/test.segy -o out.dat -f nan
+
 
 # know the location and range, such as in-line in 5, cross-line in 21,
 # in-line range: 1000-1569, cross-line range: 1-1835  
-./convertToDat /home/user/Documents/test.segy out.dat 5 21 1000 1569 1 1835
+./convertToDat -i /home/user/Documents/test.segy -o out.dat --iloc 5 --xloc 21 --inmin 1000 --inmax 1569 --xmin 1 --xmax 1835
 ```
 
 ### API
@@ -143,4 +156,5 @@ struct traceHeader{
 
 ### TODO List
 
-- [ ] add python API
+- [ ] Determine whether it is three-dimensional or two-dimensional data
+- [ ] Add python API

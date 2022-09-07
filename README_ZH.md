@@ -15,6 +15,7 @@ segy format <------> binary format
 
 一些代码参考了Google的 [segy-stack](https://github.com/google/segy-stack).
 
+`cmdline.h` 来自于 Tanaka 的 [cmdline](https://github.com/tanakh/cmdline).
 
 ## 用法
 
@@ -43,4 +44,5 @@ g++ -o convertToSegy addSegy.cpp convertToSegy.cpp
 
 - [x] 将 4-byte 的 IBM 浮点数转为 4-byte 的 IEEE 浮点数
 - [x] 将 4-byte 的 IEEE 浮点数转为 4-byte 的 IBM 浮点数
+- [ ] 判断是3维数据还是2维数据 (目前无法处理二维数据且不会报错, 会得到错误的结果)
 - [ ] 增加 python 的调用接口

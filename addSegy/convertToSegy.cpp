@@ -13,55 +13,49 @@
 
 #include <iostream>
 
+#include "../readSegy/cmdline.h"
 #include "addSegy.h"
 
 int main(int argc, char** argv) {
-    std::string p =
-        "Help: Convert binary file to Segy format file. \n"
-        "Usage: convertToSegy infile n1 n2 n3 [outfile dt sxline sinline]\n"
-        "param: \n"
-        "       infile: binary file path, e.g. mybin.dat\n"
-        "       n1:     ns, i.e. number of samples per data trace\n"
-        "       n2:     crossline number, i.e. number of traces per inline\n"
-        "       n3:     inline number, i.e. number of traces per crossline\n"
-        "       outfile (optional): output file name, e.g. mytest, default: OUT_AddSegy\n"
-        "       dt (optional): Sample interval, default: 4000 microsecond\n"
-        "       sxline (optional): The first crossline number, default: 1\n"
-        "       sinline (optional): The first inline number, default: 1\n";
+  cmdline::parser args;
+  args.add<std::string>("infile", 'i', "input binary file path", true);
+  args.add<int>("nt", '\0', "ns or nt, i.e. number of samples per tarce", true);
+  args.add<int>("nx", '\0',
+                "crossline number, i.e. number of traces per inline", true);
+  args.add<int>("ni", '\0',
+                "inline number, i.e. number of traces per crossline", true);
+  args.add<std::string>("outfile", 'o', "output file name, e.g. mytest", false,
+                        "OUT_AddSegy");
+  args.add<int>("dt", '\0', "Sample interval in microseconds", false, 4000);
+  args.add<int>("sxline", '\0', "The first crossline number", false, 1);
+  args.add<int>("sinline", '\0', "The first inline number", false, 1);
+  args.add("help", 'h', "Convert binary file to Segy format file.");
+  std::string exp =
+      "Example: \n"
+      "convertToSegy -i test.dat --nt 200 --nx 250 --ni 100 -o test \n"
+      "convertToSegy -i test.dat --nt 200 --nx 250 --ni 100 -o test --dt 2000";
 
-    if (argc == 1) {
-        std::cout << p;
-        exit(1);
-    } else if (argc < 5) {
-        std::cout << "Input error! You can enter 4/5/6/8 parameters."
-                  << std::endl;
-        std::cout << p;
-        exit(1);
-    }
+  args.parse(argc, argv);
+  if (argc == 1 || args.exist("help")) {
+    std::cerr << args.usage();
+    std::cerr << exp << std::endl;
+    return 0;
+  }
 
-    size_t ns = std::stoi(argv[2]);
-    size_t nxline = std::stoi(argv[3]);
-    size_t ninline = std::stoi(argv[4]);
+  args.parse_check(argc, argv);
 
-    AddSegy segy(argv[1], ns, nxline, ninline);
+  size_t nt = args.get<int>("nt");
+  size_t nx = args.get<int>("nx");
+  size_t ni = args.get<int>("ni");
+  size_t dt = args.get<int>("dt");
+  size_t sx = args.get<int>("sxline");
+  size_t si = args.get<int>("sinline");
+  std::string infile = args.get<std::string>("infile");
+  std::string outname = args.get<std::string>("outfile");
 
-    if (argc > 5) {
-        segy.setOutName(argv[5]);
-        if (argc > 6) {
-            segy.setSampleInterval(std::stoi(argv[6]));
-            if (argc > 7) {
-                if (argc == 9) {
-                    segy.setStart(std::stoi(argv[8]), std::stoi(argv[7]));
-                } else {
-                    std::cout
-                        << "Input error! You can enter 4/5/6/8 parameters."
-                        << std::endl;
-                    std::cout << p;
-                    exit(1);
-                }
-            }
-        }
-    }
-
-    segy.convert();
+  AddSegy segy(infile, nt, nx, ni);
+  segy.setSampleInterval(dt);
+  segy.setStart(si, sx);
+  segy.setOutName(outname);
+  segy.convert();
 }

@@ -32,60 +32,72 @@ g++ -o convertToDat convertToDat.cpp segy.cpp
 ```shell
 # 查看帮助文档
 ./printTextHeader
-# Help: print the 3200 bytes text header of a segy format file 
-# Usage: printTextHeader infile 
-# param: 
-#        infile: input segy format file name, e.g. RMS.segy.
+# Print the 3200 bytes text header of a segy file.
 
-./printTextHeader /home/user/Documents/test.segy
+# usage: printTextHeader --infile=string [options] ...
+# options:
+#   -i, --infile    input segy file name (string)
+#   -h, --help      print the 3200 bytes text header
+
+./printTextHeader -i /home/user/Documents/test.segy
 ```
 
 扫描一个segy文件, 获取 in-line 和 cross-line 的范围
 ```shell
 # 查看帮助文档
 ./scan
-# Help: Scan a segy file, obtain the range of in-line and cross-line numbers. 
-# Usage: scan infile [iloc xloc] 
-# param: 
-#        infile: input segy format file name, e.g. RMS.segy 
-#        iloc (opt): location for inline number in trace header, e.g. 5
-#        xloc (opt): location for crossline number in trace header, e.g. 21
+# Scan a segy file, obtain the range of in-line and cross-line numbers.
+
+# usage: scan --infile=string [options] ...
+# options:
+#   -i, --infile    input segy format file name (string)
+#       --iloc      location for inline number in trace header (int [=-1])
+#       --xloc      location for inline number in trace header (int [=-1])
+#   -h, --help      Scan a segy file
 
 # 不知道 in-line 和 cross-line 在 trace header 中的存储位置, 
 # 会先猜测 in-line 和 cross-line 的存储位置
-./scan /home/user/Documents/test.segy
+./scan -i /home/user/Documents/test.segy
 
 # 知道存储位置, 比如 in-line: 5, cross-line: 21
-./scan /home/user/Documents/test.segy 5 21
+./scan -i /home/user/Documents/test.segy --iloc 5 --xloc 21
 ```
 
 将segy格式的三维地震数据转化为没有道头信息的二进制格式数据. 
-如果segy格式的数据缺失了某些地震道，`convertToDat` 将会用 0 填充。
+如果segy格式的数据缺失了某些地震道，`convertToDat` 将会用 `fill` 填充。
 ```shell
 # 查看帮助文档
 ./convertToDat
-# Help: Convert segy format file to binary file.
-# Usage: convertToDat infile outfile [iloc xloc [inmin inmax xmin xmax]]
-# Param: 
-#        infile: input segy file name, e.g. RMS.segy 
-#        outfile: output binary file name, e.g. out.dat 
-#        iloc (opt): location for inline number in trace header, e.g. 5
-#        xloc (opt): location for crossline number in trace header, e.g. 21
-#        inmin (opt): the minimum number of inline, e.g. 1000 
-#        inmax (opt): the maximum number of inline, e.g. 1800 
-#        xmin (opt): the minimum number of crossline, e.g. 50 
-#        xmax (opt): the maximum number of crossline, e.g. 580 
+# Convert a segy file to a binary file without any header.
+# If there are some missing traces, this program will pad them with a fill number (default 0).
+
+# usage: convertToDat --infile=string [options] ...
+# options:
+#   -i, --infile     input Segy file name (string)
+#   -o, --outfile    output binary file name (string [=out.dat])
+#       --iloc       location for inline number in trace header (int [=-1])
+#       --xloc       location for crossline number in trace header (int [=-1])
+#       --inmin      the mininum number of inline (int [=-1])
+#       --inmax      the maxinum number of inline (int [=-1])
+#       --xmin       the mininum number of crossline (int [=-1])
+#       --xmax       the maxinum number of crossline (int [=-1])
+#   -f, --fill       the number to fill the miss trace, can be any float or nan, or NAN (string [=0.0])
+#   -h, --help       Convert a segy file to a binary file
+
 # The more parameters entered, the less time used
 
-./convertToDat /home/user/Documents/test.segy out.dat
+./convertToDat -i /home/user/Documents/test.segy -o out.dat
 
 # 知道存储位置, 比如 in-line: 5, cross-line: 21
-./convertToDat /home/user/Documents/test.segy out.dat 5 21
+./convertToDat -i /home/user/Documents/test.segy -o out.dat --iloc 5 --xloc 21
+
+# 如果有空道，使用什么值填充? 可以是任意浮点数, 也可以是 nan 或者 NAN
+./convertToDat -i /home/user/Documents/test.segy -o out.dat -f nan
 
 # 知道存储位置, 比如 in-line: 5, cross-line: 21
 # 并知道 in-line 和 cross-line 的范围, 
 # 比如 in-line range: 1000-1569, cross-line range: 1-1835  
-./convertToDat /home/user/Documents/test.segy out.dat 5 21 1000 1569 1 1835
+./convertToDat -i /home/user/Documents/test.segy -o out.dat --iloc 5 --xloc 21 --inmin 1000 --inmax 1569 --xmin 1 --xmax 1835
 ```
 
 ### API
@@ -145,4 +157,5 @@ struct traceHeader{
 
 ### TODO List
 
+- [ ] 判断是3维数据还是2维数据 (目前无法处理二维数据且不会报错, 会得到错误的结果)
 - [ ] 增加 python 的调用接口

@@ -14,6 +14,7 @@
  */
 
 #ifndef READSEGY_SEGY_H_
+#define READSEGY_SEGY_H_
 
 #include <climits>
 #include <fstream>
@@ -22,24 +23,25 @@
 
 // 400 bytes binary header, stored in 3200-3600 bytes
 struct binaryHeader {
-    short dt;           // Sample interval, 17-18 (17-1 in cpp)
-    short ns;           // Number of samples per data trace, 21-22
-    short dformat;      // Data sample format code, 25-26
-    short numExHeader;  // Number of 3200-byte, Extended Textual File Header, 305-306
-    int numTrailer;  // Number of 3200-byte data trailer stanza records, 329-332
-    size_t totalTrace;  // Total traces in segy file. need to calculate
+  short dt;           // Sample interval, 17-18 (17-1 in cpp)
+  short ns;           // Number of samples per data trace, 21-22
+  short dformat;      // Data sample format code, 25-26
+  short numExHeader;  // Number of 3200-byte, Extended Textual File Header,
+                      // 305-306
+  int numTrailer;  // Number of 3200-byte data trailer stanza records, 329-332
+  size_t totalTrace;  // Total traces in segy file. need to calculate
 };
 
 // 240 bytes trace header
 struct traceHeader {
-    int inlLoc;  // in-line number, 5-8 or 9-12 or 189-192
-    int xlLoc;   // cross-line number, 17-20 or 21-24 or 193-196
-    int inmax;   // maximum of in-line number, need to scan or set
-    int xlmax;   // minimum of in-line number, ...
-    int inmin;   // maximum of cross-line number, ...
-    int xlmin;   // minimum of cross-line number, ...
-    // int x;          // 73-76
-    // int y;          // 77-80
+  int inlLoc;  // in-line number, 5-8 or 9-12 or 189-192
+  int xlLoc;   // cross-line number, 17-20 or 21-24 or 193-196
+  int inmax;   // maximum of in-line number, need to scan or set
+  int xlmax;   // minimum of in-line number, ...
+  int inmin;   // maximum of cross-line number, ...
+  int xlmin;   // minimum of cross-line number, ...
+               // int x;          // 73-76
+               // int y;          // 77-80
 };
 
 // A key map that convert EBCDIC to ASCII format
@@ -67,75 +69,75 @@ const std::map<unsigned char, char> kEBCDICtoASCIImap = {
 // @param:
 //      const std::string infile: input segy file name
 class SegyFile {
-   public:
-    char textheader[3200];  // 3200 bytes text header, EBCDIC or ASCII format
-    std::fstream in_;
-    std::fstream out_;
-    binaryHeader binaryHeader_;
-    traceHeader th;
-    std::string outfile;
+ public:
+  char textheader[3200];  // 3200 bytes text header, EBCDIC or ASCII format
+  std::fstream in_;
+  std::fstream out_;
+  binaryHeader binaryHeader_;
+  traceHeader th;
+  std::string outfile;
 
-    SegyFile(const std::string infile);
-    ~SegyFile();
+  SegyFile(const std::string infile);
+  ~SegyFile();
 
-    void printTextHeader();
-    void getBinaryHeader();
-    // set some parameters: storage location of in-line and cross-line number
-    void setParameters(size_t iloc, size_t xloc);
-    // override, add more parameters: in-line range and cross-line number range
-    void setParameters(size_t iloc, size_t xloc, size_t imin, size_t imax,
-                       size_t xmin, size_t xmax);
-    // convert a segy file to a binary file
-    void toDat(const std::string outfile = "out.dat");
-    // guess the storage location of in-line number and cross-line number
-    void guessLoc();
-    // scan the whole segy file, obtain the range of in-line and cross-line
-    // number
-    void scan();
+  void printTextHeader();
+  void getBinaryHeader();
+  // set some parameters: storage location of in-line and cross-line number
+  void setParameters(size_t iloc, size_t xloc);
+  // override, add more parameters: in-line range and cross-line number range
+  void setParameters(size_t iloc, size_t xloc, size_t imin, size_t imax,
+                     size_t xmin, size_t xmax);
+  // convert a segy file to a binary file
+  void toDat(const std::string outfile = "out.dat", float fills = 0.0);
+  // guess the storage location of in-line number and cross-line number
+  void guessLoc();
+  // scan the whole segy file, obtain the range of in-line and cross-line
+  // number
+  void scan();
 
-   private:
-    // determine if the text header is EBCDIC format
-    bool isTextInEBCDICFormat(const char* text);
-    // convert a EBCDIC format char to ASCII format
-    char getASCIIFromEBCDIC(char c);
-    // wite a trace to the binary file
-    void writeTrace(const std::vector<float>& trace);
-    // read a trace from specific location
-    void readTrace(std::vector<float>& trace, int64_t loc);
-    // swap a number between big endian and little endian
-    template <typename T>
-    T swap_endian(T u);
-    // convert a IBM 4-points float number to IEEE 4-points float format.
-    float ibm_to_ieee(float value, bool is_big_endian_input);
-    // read a specific format number from a specific loaction, used in binary or
-    // trace header
-    template <typename T>
-    T readData(int64_t loc);
+ private:
+  // determine if the text header is EBCDIC format
+  bool isTextInEBCDICFormat(const char* text);
+  // convert a EBCDIC format char to ASCII format
+  char getASCIIFromEBCDIC(char c);
+  // wite a trace to the binary file
+  void writeTrace(const std::vector<float>& trace);
+  // read a trace from specific location
+  void readTrace(std::vector<float>& trace, int64_t loc);
+  // swap a number between big endian and little endian
+  template <typename T>
+  T swap_endian(T u);
+  // convert a IBM 4-points float number to IEEE 4-points float format.
+  float ibm_to_ieee(float value, bool is_big_endian_input);
+  // read a specific format number from a specific loaction, used in binary or
+  // trace header
+  template <typename T>
+  T readData(int64_t loc);
 };
 
 template <typename T>
 T SegyFile::swap_endian(T u) {
-    static_assert(CHAR_BIT == 8, "CHAR_BIT != 8");
+  static_assert(CHAR_BIT == 8, "CHAR_BIT != 8");
 
-    union {
-        T u;
-        unsigned char u8[sizeof(T)];
-    } source, dest;
+  union {
+    T u;
+    unsigned char u8[sizeof(T)];
+  } source, dest;
 
-    source.u = u;
+  source.u = u;
 
-    for (size_t k = 0; k < sizeof(T); k++)
-        dest.u8[k] = source.u8[sizeof(T) - k - 1];
+  for (size_t k = 0; k < sizeof(T); k++)
+    dest.u8[k] = source.u8[sizeof(T) - k - 1];
 
-    return dest.u;
+  return dest.u;
 }
 
 template <typename T>
 T SegyFile::readData(int64_t loc) {
-    in_.seekg(loc, std::ios::beg);
-    T temp = 0;
-    in_.read((char*)&temp, sizeof(T));
-    return temp;
+  in_.seekg(loc, std::ios::beg);
+  T temp = 0;
+  in_.read((char*)&temp, sizeof(T));
+  return temp;
 }
 
 #endif

@@ -27,28 +27,32 @@ g++ -o convertToSegy addSegy.cpp convertToSegy.cpp
 ```shell
 # 帮助文档
 ./convertToSegy
-# Usage: convertToSegy infile n1 n2 n3 [outfile dt sxline sinline]
-# param:
-#        infile: binary file path, e.g. mybin.dat
-#        n1:     ns, i.e. number of samples per data trace
-#        n2:     crossline number, i.e. number of traces per inline
-#        n3:     inline number, i.e. number of traces per crossline
-#        outfile (optional): output file name, e.g. mytest, default: OUT_AddSegy
-#        dt (optional): Sample interval, default: 4000 microsecond
-#        sxline (optional): The first crossline number, default: 1
-#        sinline (optional): The first inline number, default: 1
+# usage: convertToSegy --infile=string --nt=int --nx=int --ni=int [options] ...
+# options:
+#   -i, --infile     input binary file path (string)
+#       --nt         ns or nt, i.e. number of samples per tarce (int)
+#       --nx         crossline number, i.e. number of traces per inline (int)
+#       --ni         inline number, i.e. number of traces per crossline (int)
+#   -o, --outfile    output file name, e.g. mytest (string [=OUT_AddSegy])
+#       --dt         Sample interval in microseconds (int [=4000])
+#       --sxline     The first crossline number (int [=1])
+#       --sinline    The first inline number (int [=1])
+#   -h, --help       Convert binary file to Segy format file.
+# Example:
+# convertToSegy -i test.dat --nt 200 --nx 250 --ni 100 -o test
+# convertToSegy -i test.dat --nt 200 --nx 250 --ni 100 -o test --dt 2000
 
-# 4 parameters
-./convertToSegy yourfile.dat 100 1835 540
+# e.g. 
+./convertToSegy -i yourfile.dat --nt 100 --nx 1835 --ni 540
 
-# 5 parameters
-./convertToSegy yourfile.dat 100 1835 540 outfile
+# 指定输出名字
+./convertToSegy -i yourfile.dat --nt 100 --nx 1835 --ni 540 -o outfile
 
-# 6 parameters
-./convertToSegy yourfile.dat 100 1835 540 outfile 4000
+# 指定时间间隔
+./convertToSegy -i yourfile.dat --nt 100 --nx 1835 --ni 540 -o outfile --dt 4000
 
-# 8 parameters
-./convertToSegy yourfile.dat 100 1835 540 outfile 4000 20 50
+# 指定开始的 inline 和 crossline number
+./convertToSegy -i yourfile.dat --nt 100 --nx 1835 --ni 540 -o outfile --dt 4000 --sxline 20 --sinline 50
 ```
 
 ### API
