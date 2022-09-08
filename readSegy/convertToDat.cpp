@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2022 Jintao Li. All rights reserved.
+ * Copyright (c) 2021-2022 Jintao Li. All rights reserved.
  * University of Science and Technology of China (USTC),
  * Computational and Interpretation Group (CIG).
  *
  * @author: Jintao Li
- * @update: 2022-06-21 add cmdline support
+ * @update: 2022-09-08 add cmdline support
  *
  * @file: convertToDat.cpp
  * @brief: Convert a segy file to a binary file without any header.
@@ -12,6 +12,7 @@
  *         `convertToDat` will pad them with a fill number (default 0).
  */
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 
@@ -27,10 +28,9 @@ int main(int argc, char **argv) {
                 false, -1);
   args.add<int>("xloc", '\0', "location for crossline number in trace header",
                 false, -1);
-  args.add<int>("inmin", '\0', "the mininum number of inline", false, -1);
-  args.add<int>("inmax", '\0', "the maxinum number of inline", false, -1);
-  args.add<int>("xmin", '\0', "the mininum number of crossline", false, -1);
-  args.add<int>("xmax", '\0', "the maxinum number of crossline", false, -1);
+  args.add<int>("range", 'r', 4,
+                "[inmin, inmax, xmin. xmax], the range of in/x-line", false,
+                cmdline::vectors<int>(-1, -1, -1, -1));
   args.add<std::string>(
       "fill", 'f',
       "the number to fill the miss trace, can be any float or nan, or NAN",
@@ -40,25 +40,45 @@ int main(int argc, char **argv) {
   std::string brief =
       "Convert a segy file to a binary file without any header. \nIf there are "
       "some missing traces, this program will pad them with a fill number "
-      "(default 0). \n";
+      "(default 0).";
+
+  args.add_overview(brief);
+  args.add_examples("./convertToDat -i f3.segy");
+  args.add_examples("./convertToDat -i f3.segy -o f3.dat");
+  args.add_examples(
+      "./convertToDat -i f3.segy -o f3.dat --nt 100 --nx 105 --ni 200");
+  args.add_examples("./convertToDat -i f3.segy -o f3.dat -f nan");
+  args.add_examples(
+      "./convertToDat -i f3.segy -o out.dat --iloc 5 --xloc 21 -r 100 500 20 "
+      "800");
 
   args.parse(argc, argv);
   if (argc == 1 || args.exist("help")) {
-    std::cerr << brief << std::endl;
     std::cerr << args.usage();
     return 0;
   }
 
   args.parse_check(argc, argv);
 
+  if (args.exist("iloc") ^ args.exist("xloc")) {
+    std::cerr << "--iloc and --xloc must be (or not be) specialized together"
+              << std::endl;
+    return 0;
+  }
+
   SegyFile segy(args.get<std::string>("infile"));
 
+  std::vector<int> rg = args.get<int>("range", 0);
+
+  if (rg[1] < rg[0] || rg[3] < rg[2]) {
+    std::cerr << "Invalid range: " << rg[0] << " " << rg[1] << " " << rg[2]
+              << " " << rg[3] << std::endl;
+  }
+
   if (args.get<int>("iloc") >= 0 && args.get<int>("xloc") >= 0) {
-    if (args.get<int>("inmin") >= 0 && args.get<int>("inmax") >= 0 &&
-        args.get<int>("xmin") >= 0 && args.get<int>("xmax") >= 0) {
-      segy.setParameters(args.get<int>("iloc"), args.get<int>("xloc"),
-                         args.get<int>("inmin"), args.get<int>("inmax"),
-                         args.get<int>("xmin"), args.get<int>("xmax"));
+    if (rg[0] >= 0 && rg[1] >= 0 && rg[2] >= 0 && rg[3] >= 0) {
+      segy.setParameters(args.get<int>("iloc"), args.get<int>("xloc"), rg[0],
+                         rg[1], rg[2], rg[3]);
     } else {
       segy.setParameters(args.get<int>("iloc"), args.get<int>("xloc"));
     }

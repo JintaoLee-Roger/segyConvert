@@ -1,11 +1,10 @@
 /*
- * Copyright (c) 2021 Jintao Li. All rights reserved.
+ * Copyright (c) 2021-2022 Jintao Li. All rights reserved.
  * University of Science and Technology of China (USTC),
  * Computational and Interpretation Group (CIG).
  *
  * @author: Jintao Li
- * @version: v0.1
- * @date: 2021-05-29
+ * @date: 2022-09-08 support fill any float or nan NAN
  *
  * @file: segy.h
  * @brief: statement of SegyFile class, which is used to convert

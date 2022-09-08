@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2022 Jintao Li. All rights reserved.
+ * Copyright (c) 2021-2022 Jintao Li. All rights reserved.
  * University of Science and Technology of China (USTC),
  * Computational and Interpretation Group (CIG).
  *
  * @author: Jintao Li
- * @update: 2022-06-21 add cmdline support
+ * @update: 2022-09-08 add cmdline support
  *
  * @file: printTextHeader.cpp
  * @brief: Print the 3200 bytes text header.
@@ -20,11 +20,11 @@ int main(int argc, char** argv) {
   args.add<std::string>("infile", 'i', "input segy file name", true);
   args.add("help", 'h', "print the 3200 bytes text header");
 
-  std::string brif = "Print the 3200 bytes text header of a segy file.\n";
+  args.add_overview("Print the 3200 bytes text header of a segy file.");
+  args.add_examples("./printTextHeader f3.segy");
 
   args.parse(argc, argv);
   if (argc == 1 || args.exist("help")) {
-    std::cerr << brif << std::endl;
     std::cerr << args.usage();
     return 0;
   }

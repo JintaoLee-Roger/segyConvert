@@ -38,6 +38,9 @@ Print the 3200 bytes text header.
 # options:
 #   -i, --infile    input segy file name (string)
 #   -h, --help      print the 3200 bytes text header
+#
+# Examples: 
+#   ./printTextHeader f3.segy
 
 ./printTextHeader -i /home/user/Documents/test.segy
 ```
@@ -54,6 +57,10 @@ Scan a segy file, obtain the range of in-line and cross-line numbers.
 #       --iloc      location for inline number in trace header (int [=-1])
 #       --xloc      location for inline number in trace header (int [=-1])
 #   -h, --help      Scan a segy file
+#
+# Examples: 
+#   ./scan -i f3.segy
+#   ./scan -i f3.segy --iloc 5 --ixloc 17
 
 # don't know the location of in-line and cross-line.
 ./scan -i /home/user/Documents/test.segy
@@ -82,6 +89,13 @@ missing traces, `convertToDat` will pad them with `fill`.
 #       --xmax       the maxinum number of crossline (int [=-1])
 #   -f, --fill       the number to fill the miss trace, can be any float or nan, or NAN (string [=0.0])
 #   -h, --help       Convert a segy file to a binary file
+#
+# Examples: 
+#   ./convertToDat -i f3.segy
+#   ./convertToDat -i f3.segy -o f3.dat
+#   ./convertToDat -i f3.segy -o f3.dat --nt 100 --nx 105 --ni 200
+#   ./convertToDat -i f3.segy -o f3.dat -f nan
+#   ./convertToDat -i f3.segy -o out.dat --iloc 5 --xloc 21 --inmin 1000 --inmax 1569 --xmin 1 --xmax 1835
 
 # The more parameters entered, the less time used
 

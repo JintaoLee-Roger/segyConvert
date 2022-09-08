@@ -1,11 +1,10 @@
 /*
- * Copyright (c) 2021 Jintao Li. All rights reserved.
+ * Copyright (c) 2021-2022 Jintao Li. All rights reserved.
  * University of Science and Technology of China (USTC),
  * Computational and Interpretation Group (CIG).
  *
  * @author: Jintao Li
- * @version: v0.1
- * @date: 2021-08-06
+ * @date: 2022-09-08
  *
  * @file: addSegy.h
  * @brief: A class for adding segy format header information to binary file,
@@ -20,17 +19,17 @@
 #include <vector>
 
 struct keys {
-    std::string outName;
-    size_t ns;       // ns
-    size_t nxline;   // xline
-    size_t ninline;  // inline
-    size_t dt;
-    size_t sxline;
-    size_t sinline;
-    bool big_endian;
-    short dtype;
-    size_t iloc;
-    size_t xloc;
+  std::string outName;
+  size_t ns;       // ns
+  size_t nxline;   // xline
+  size_t ninline;  // inline
+  size_t dt;
+  size_t sxline;
+  size_t sinline;
+  bool big_endian;
+  short dtype;
+  size_t iloc;
+  size_t xloc;
 };
 
 const std::map<char, unsigned char> kASCIItoEBCDICmap = {
@@ -52,107 +51,107 @@ const std::map<char, unsigned char> kASCIItoEBCDICmap = {
     {'7', 247},  {'8', 248}, {'9', 249}};
 
 class AddSegy {
-   public:
-    char textheader[3201] =
-        "C01 SEGY OUTPUT FROM AddSegy by Jintao Li (CIG, USTC, 2021)                     "
-        "C02 github: https://github.com/JintaoLee-Roger/segyConvert                      "
-        "C03                                                                             "
-        "C04 Name: OUT_AddSegy                                                           "
-        "C05 Type: 3D seismic  Created Time: 2021/08/04T15:02                            "
-        "C06                                                                             "
-        "C07 First inline: 1000   Last inline: 1569                                      "
-        "C08 First xline:  1      Last xline:  1835                                      "
-        "C09                                                                             "
-        "C10 Sample interval: 4000   microsecond                                         "
-        "C11 Number of samples per data trace: 1260                                      "
-        "C12 Byte endian: BIG_ENDIAN                                                     "
-        "C13 Data sample format: 4-byte IEEE floating-point                              "
-        "C14                                                                             "
-        "C15                                                                             "
-        "C16                                                                             "
-        "C17                                                                             "
-        "C18 Binary header locations:                                                    "
-        "C19 Sample interval             : bytes 17-18                                   "
-        "C20 Number of samples per trace : bytes 21-22                                   "
-        "C21 Data sample format code     : bytes 25-26                                   "
-        "C22                                                                             "
-        "C23 Trace header locations:                                                     "
-        "C24 Inline number               : bytes 5-8                                     "
-        "C25 Xline number                : bytes 21-24                                   "
-        "C26 X coordinate                : bytes 73-76                                   "
-        "C27 Y coordinate                : bytes 77-80                                   "
-        "C28 Trace start time/depth      : bytes 109-110                                 "
-        "C29 Number of samples per trace : bytes 115-116                                 "
-        "C30 Sample interval             : bytes 117-118                                 "
-        "C31                                                                             "
-        "C32                                                                             "
-        "C33                                                                             "
-        "C34                                                                             "
-        "C35                                                                             "
-        "C36                                                                             "
-        "C37                                                                             "
-        "C38                                                                             "
-        "C39                                                                             "
-        "C40 END EBCDIC                                                                  ";
+ public:
+  char textheader[3201] =
+    "C01 SEGY OUTPUT FROM AddSegy by Jintao Li (CIG, USTC, 2021)                     "
+    "C02 github: https://github.com/JintaoLee-Roger/segyConvert                      "
+    "C03                                                                             "
+    "C04 Name: OUT_AddSegy                                                           "
+    "C05 Type: 3D seismic  Created Time: 2021/08/04T15:02                            "
+    "C06                                                                             "
+    "C07 First inline: 1000   Last inline: 1569                                      "
+    "C08 First xline:  1      Last xline:  1835                                      "
+    "C09                                                                             "
+    "C10 Sample interval: 4000   microsecond                                         "
+    "C11 Number of samples per data trace: 1260                                      "
+    "C12 Byte endian: BIG_ENDIAN                                                     "
+    "C13 Data sample format: 4-byte IEEE floating-point                              "
+    "C14                                                                             "
+    "C15                                                                             "
+    "C16                                                                             "
+    "C17                                                                             "
+    "C18 Binary header locations:                                                    "
+    "C19 Sample interval             : bytes 17-18                                   "
+    "C20 Number of samples per trace : bytes 21-22                                   "
+    "C21 Data sample format code     : bytes 25-26                                   "
+    "C22                                                                             "
+    "C23 Trace header locations:                                                     "
+    "C24 Inline number               : bytes 5-8                                     "
+    "C25 Xline number                : bytes 21-24                                   "
+    "C26 X coordinate                : bytes 73-76                                   "
+    "C27 Y coordinate                : bytes 77-80                                   "
+    "C28 Trace start time/depth      : bytes 109-110                                 "
+    "C29 Number of samples per trace : bytes 115-116                                 "
+    "C30 Sample interval             : bytes 117-118                                 "
+    "C31                                                                             "
+    "C32                                                                             "
+    "C33                                                                             "
+    "C34                                                                             "
+    "C35                                                                             "
+    "C36                                                                             "
+    "C37                                                                             "
+    "C38                                                                             "
+    "C39                                                                             "
+    "C40 END EBCDIC                                                                  ";
 
-    char binaryheader[400] = {0};
-    char traceheader[240] = {0};
-    keys _key{"OUT_AddSegy", 0, 0, 0, 4000, 1, 1, true, 5, 5, 21};
+  char binaryheader[400] = {0};
+  char traceheader[240] = {0};
+  keys _key{"OUT_AddSegy", 0, 0, 0, 4000, 1, 1, true, 5, 5, 21};
 
-    std::fstream in_;
-    std::fstream out_;
+  std::fstream in_;
+  std::fstream out_;
 
-    AddSegy(const std::string infile, const int ns, const int nxline,
-            const int ninline);
-    ~AddSegy();
+  AddSegy(const std::string infile, const int ns, const int nxline,
+          const int ninline);
+  ~AddSegy();
 
-    void setSampleInterval(int t);    // default 4000 microsecond
-    void setLoc(int iloc, int xloc);  // default 5, 17
-    void setStart(int is, int xs);    // default 1, 1
-    void setOutName(const std::string outfile);
-    void convert();
+  void setSampleInterval(int t);    // default 4000 microsecond
+  void setLoc(int iloc, int xloc);  // default 5, 17
+  void setStart(int is, int xs);    // default 1, 1
+  void setOutName(const std::string outfile);
+  void convert();
 
-   private:
-    void writeTextHeader();
-    void updateTextHeader();
-    void updateBinaryHeader();
-    void initialTraceHeader();
-    void updateTraceHeader(int32_t inum, int32_t xnum, int32_t x, int32_t y);
-    void replaceStr(char *t, const std::string s, size_t start, size_t len);
-    template <typename T>
-    void replaceStr(char *t, T u, size_t start);
-    char getEBCIDFromASCII(char c);
-    void readTrace(std::vector<float> &trace, int64_t loc);
-    void writeTrace();
-    template <typename T>
-    T swap_endian(T u);
-    float ieee_to_ibm(float value, bool is_litte_endian_input);
+ private:
+  void writeTextHeader();
+  void updateTextHeader();
+  void updateBinaryHeader();
+  void initialTraceHeader();
+  void updateTraceHeader(int32_t inum, int32_t xnum, int32_t x, int32_t y);
+  void replaceStr(char *t, const std::string s, size_t start, size_t len);
+  template <typename T>
+  void replaceStr(char *t, T u, size_t start);
+  char getEBCIDFromASCII(char c);
+  void readTrace(std::vector<float> &trace, int64_t loc);
+  void writeTrace();
+  template <typename T>
+  T swap_endian(T u);
+  float ieee_to_ibm(float value, bool is_litte_endian_input);
 };
 
 template <typename T>
 void AddSegy::replaceStr(char *t, T u, size_t start) {
-    if (_key.big_endian) u = swap_endian(u);
-    char *p = reinterpret_cast<char *>(&u);
-    for (int i = 0; i < sizeof(T); ++i) {
-        t[start + i] = *(p + i);
-    }
+  if (_key.big_endian) u = swap_endian(u);
+  char *p = reinterpret_cast<char *>(&u);
+  for (int i = 0; i < sizeof(T); ++i) {
+    t[start + i] = *(p + i);
+  }
 }
 
 template <typename T>
 T AddSegy::swap_endian(T u) {
-    static_assert(CHAR_BIT == 8, "CHAR_BIT != 8");
+  static_assert(CHAR_BIT == 8, "CHAR_BIT != 8");
 
-    union {
-        T u;
-        unsigned char u8[sizeof(T)];
-    } source, dest;
+  union {
+    T u;
+    unsigned char u8[sizeof(T)];
+  } source, dest;
 
-    source.u = u;
+  source.u = u;
 
-    for (size_t k = 0; k < sizeof(T); k++)
-        dest.u8[k] = source.u8[sizeof(T) - k - 1];
+  for (size_t k = 0; k < sizeof(T); k++)
+    dest.u8[k] = source.u8[sizeof(T) - k - 1];
 
-    return dest.u;
+  return dest.u;
 }
 
 #endif
