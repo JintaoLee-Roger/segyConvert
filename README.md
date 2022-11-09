@@ -24,12 +24,12 @@ Some code references Google's respository: [segy-stack](https://github.com/googl
 
 ```shell
 # readSegy
-g++ -o printTextHeader segy.cpp printTextHeader.cpp
-g++ -o scan scan.cpp segy.cpp
-g++ -o convertToDat convertToDat.cpp segy.cpp
+g++ -std=c++11 -O3 -o printTextHeader segy.cpp printTextHeader.cpp
+g++ -std=c++11 -O3 -o scan scan.cpp segy.cpp
+g++ -std=c++11 -O3 -o convertToDat convertToDat.cpp segy.cpp
 
 # addSegy
-g++ -o convertToSegy addSegy.cpp convertToSegy.cpp
+g++ -std=c++11 -O3 -o convertToSegy addSegy.cpp convertToSegy.cpp
 ```
 
 The four files are also avaliable in [**Releases**](https://github.com/JintaoLee-Roger/segyConvert/releases)

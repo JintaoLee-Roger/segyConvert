@@ -20,16 +20,18 @@
 
 struct keys {
   std::string outName;
-  size_t ns;       // ns
-  size_t nxline;   // xline
-  size_t ninline;  // inline
-  size_t dt;
-  size_t sxline;
-  size_t sinline;
-  bool big_endian;
-  short dtype;
-  size_t iloc;
-  size_t xloc;
+  size_t nt;   // nt, requried
+  size_t nx;   // xline, requried
+  size_t ni;   // inline, requried
+  size_t dt;   // interval of time dimention
+  size_t sxline; // start xline number
+  size_t sinline; // start inline number
+  bool big_endian; // is big endian
+  short dtype; // 1 for 4 bytes ibm float, 5 for 4 bytes ieee float
+  size_t iloc; // inline number location
+  size_t xloc; // crossline number location
+  float dx; // interval of x
+  float dy; // interval of y
 };
 
 const std::map<char, unsigned char> kASCIItoEBCDICmap = {
@@ -52,6 +54,26 @@ const std::map<char, unsigned char> kASCIItoEBCDICmap = {
 
 class AddSegy {
  public:
+  AddSegy(const std::string infile, const int nt, const int nx,
+          const int ni);
+  ~AddSegy();
+
+  void setSampleInterval(int t);    // default 4000 microsecond
+  void setXlineLoc(int xloc); 
+  void setInlineLoc(int iloc);
+  void setLoc(int iloc, int xloc);  // default 5, 17
+  void setXStart(int xs);
+  void setInStart(int is);
+  void setStart(int is, int xs);    // default 1, 1
+  void setXInterval(float dx);
+  void setYInterval(float dy);
+  void setInterval(float dx, float dy);
+  void setDtype(short dtype);
+  void setOutName(const std::string outfile);
+  void convert();
+  // void check_keys();
+
+ private:
   char textheader[3201] =
     "C01 SEGY OUTPUT FROM AddSegy by Jintao Li (CIG, USTC, 2021)                     "
     "C02 github: https://github.com/JintaoLee-Roger/segyConvert                      "
@@ -62,12 +84,12 @@ class AddSegy {
     "C07 First inline: 1000   Last inline: 1569                                      "
     "C08 First xline:  1      Last xline:  1835                                      "
     "C09                                                                             "
-    "C10 Sample interval: 4000   microsecond                                         "
+    "C10 nt, nx, ni = 1260, 1835, 570                                                "
     "C11 Number of samples per data trace: 1260                                      "
-    "C12 Byte endian: BIG_ENDIAN                                                     "
-    "C13 Data sample format: 4-byte IEEE floating-point                              "
-    "C14                                                                             "
-    "C15                                                                             "
+    "C12 Sample interval: 4000   microsecond                                         "
+    "C13 X interval: 25 meters, Y interval: 25 meters                                "
+    "C14 Byte endian: BIG_ENDIAN                                                     "
+    "C15 Data sample format: 4-byte IEEE floating-point                              "
     "C16                                                                             "
     "C17                                                                             "
     "C18 Binary header locations:                                                    "
@@ -96,22 +118,11 @@ class AddSegy {
 
   char binaryheader[400] = {0};
   char traceheader[240] = {0};
-  keys _key{"OUT_AddSegy", 0, 0, 0, 4000, 1, 1, true, 5, 5, 21};
+  keys _key{"OUT_AddSegy.segy", 0, 0, 0, 4000, 1, 1, true, 5, 5, 21, 25, 25};
 
   std::fstream in_;
   std::fstream out_;
 
-  AddSegy(const std::string infile, const int ns, const int nxline,
-          const int ninline);
-  ~AddSegy();
-
-  void setSampleInterval(int t);    // default 4000 microsecond
-  void setLoc(int iloc, int xloc);  // default 5, 17
-  void setStart(int is, int xs);    // default 1, 1
-  void setOutName(const std::string outfile);
-  void convert();
-
- private:
   void writeTextHeader();
   void updateTextHeader();
   void updateBinaryHeader();

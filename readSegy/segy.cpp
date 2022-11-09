@@ -109,6 +109,17 @@ void SegyFile::guessLoc() {
             << std::endl;
 }
 
+void SegyFile::setInlineLoc(size_t iloc) { th.inlLoc = iloc - 1; }
+void SegyFile::setXlineLoc(size_t xloc) { th.xlLoc = xloc - 1; }
+void SegyFile::setInlineRange(size_t imin, size_t imax) {
+  th.inmin = imin;
+  th.inmax = imax;
+}
+
+void SegyFile::setXlineRange(size_t xmin, size_t xmax) {
+  th.xlmin = xmin;
+  th.xlmax = xmax;
+}
 void SegyFile::setParameters(size_t iloc, size_t xloc) {
   th.inlLoc = iloc - 1;
   th.xlLoc = xloc - 1;

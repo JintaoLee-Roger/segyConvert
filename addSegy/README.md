@@ -16,7 +16,7 @@ About SEGY-Y format: [SEG-Y rev 1](https://seg.org/Portals/0/SEG/News%20and%20Re
 ### Compile
 
 ```shell
-g++ -o convertToSegy addSegy.cpp convertToSegy.cpp
+g++ -std=c++11 -O3 -o convertToSegy addSegy.cpp convertToSegy.cpp
 ```
 
 The file `convertTosegy` is also avaliable in [**Releases**](https://github.com/JintaoLee-Roger/segyConvert/releases)
@@ -27,32 +27,27 @@ Convert a binary file to a segy format file.
 ```shell
 # get help
 ./convertToSegy
-# usage: convertToSegy --infile=string --nt=int --nx=int --ni=int [options] ...
+# Convert a binary file to a segy format file
+
+# usage: convertToSegy --infile=string --dims=int [options] ... 
 # options:
 #   -i, --infile     input binary file path (string)
-#       --nt         ns or nt, i.e. number of samples per tarce (int)
-#       --nx         crossline number, i.e. number of traces per inline (int)
-#       --ni         inline number, i.e. number of traces per crossline (int)
-#   -o, --outfile    output file name, e.g. mytest (string [=OUT_AddSegy])
-#       --dt         Sample interval in microseconds (int [=4000])
-#       --sxline     The first crossline number (int [=1])
-#       --sinline    The first inline number (int [=1])
+#   -n, --dims       dimentions, the order: nt nx ni (int)
+#   -o, --outfile    output file name, e.g. mytest.segy (string [=OUT_AddSegy.segy])
+#   -d, --dt         Sample interval in microseconds (int [=4000])
+#   -c, --sxline     The first crossline number (int [=1])
+#   -s, --sinline    The first inline number (int [=1])
+#   -x, --dx         The interval of x (float [=25])
+#   -y, --dy         The interval of y (float [=25])
+#   -t, --dtype      Data type(4 bytes float): 1 for IBM, 5 for IEEE (short [=5])
 #   -h, --help       Convert binary file to Segy format file.
-# Example:
-# convertToSegy -i test.dat --nt 200 --nx 250 --ni 100 -o test
-# convertToSegy -i test.dat --nt 200 --nx 250 --ni 100 -o test --dt 2000
 
-# e.g. 1
-./convertToSegy -i yourfile.dat --nt 100 --nx 1835 --ni 540
-
-# specialize out name
-./convertToSegy -i yourfile.dat --nt 100 --nx 1835 --ni 540 -o outfile
-
-# add sample interval
-./convertToSegy -i yourfile.dat --nt 100 --nx 1835 --ni 540 -o outfile --dt 4000
-
-# specializa the first crossline/inline number
-./convertToSegy -i yourfile.dat --nt 100 --nx 1835 --ni 540 -o outfile --dt 4000 --sxline 20 --sinline 50
+# Examples: 
+#   ./convertToSegy -i test.dat -n 200 250 100 -o test.segy
+#   ./convertToSegy -i test.dat -n 200 250 100 -o test.segy -d 2000
+#   ./convertToSegy -i test.dat -n 200 250 100 -o test.segy -s 20 -x 10
+#   ./convertToSegy -i test.dat -n 200 250 100 -o test.segy -t 1
+#   ./convertToSegy -i test.dat -n 200 250 100 -o test.segy -x 12.5
 ```
 
 ### API

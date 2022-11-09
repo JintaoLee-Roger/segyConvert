@@ -11,3 +11,5 @@ temp/*
 *.segy
 *.dat
 *.sgy
+
+.DS_Store

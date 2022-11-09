@@ -15,11 +15,13 @@
 #include <ctime>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <limits>
+#include <stdexcept>
 #include <vector>
 
-AddSegy::AddSegy(const std::string infile, const int ns, const int nxline,
-                 const int ninline) {
+AddSegy::AddSegy(const std::string infile, const int nt, const int nx,
+                 const int ni) {
   this->in_.open(infile, std::ios::in | std::ios::binary);
   if (!this->in_) {
     std::cout << "Open file: " << infile << " failure" << std::endl;
@@ -28,18 +30,18 @@ AddSegy::AddSegy(const std::string infile, const int ns, const int nxline,
 
   in_.seekg(0, std::ios::end);
   uintmax_t flength = in_.tellg();
-  if (ns * nxline * ninline * sizeof(float) != flength) {
-    std::cout << "Error dimension, " << ns << "*" << ninline << "*" << nxline
-              << "*sizeof(float) is " << ns * nxline * ninline * sizeof(float)
+  if (nt * nx * ni * sizeof(float) != flength) {
+    std::cout << "Error dimension, " << nt << "*" << ni << "*" << nx
+              << "*sizeof(float) is " << nt * nx * ni * sizeof(float)
               << ", which is not equal to the file size: " << flength
               << std::endl;
     exit(1);
   }
   in_.seekg(0, std::ios::beg);
 
-  this->_key.ns = ns;
-  this->_key.nxline = nxline;
-  this->_key.ninline = ninline;
+  this->_key.nt = nt;
+  this->_key.nx = nx;
+  this->_key.ni = ni;
   updateTextHeader();
   updateBinaryHeader();
   initialTraceHeader();
@@ -52,7 +54,18 @@ AddSegy::~AddSegy() {
   }
 }
 
-void AddSegy::setSampleInterval(int t) { _key.dt = t; }
+void AddSegy::setSampleInterval(int dt) { _key.dt = dt; }
+void AddSegy::setXInterval(float dx) { _key.dx = dx; }
+void AddSegy::setYInterval(float dy) { _key.dy = dy; }
+void AddSegy::setInlineLoc(int iloc) { _key.iloc = iloc; }
+void AddSegy::setXlineLoc(int xloc) { _key.xloc = xloc; }
+void AddSegy::setInStart(int is) { _key.sinline = is; }
+void AddSegy::setXStart(int xs) { _key.sxline = xs; }
+void AddSegy::setDtype(short dtype) { _key.dtype = dtype; }
+void AddSegy::setInterval(float dx, float dy) {
+  _key.dx = dx;
+  _key.dy = dy;
+}
 
 void AddSegy::setLoc(int iloc, int xloc) {
   _key.iloc = iloc;
@@ -71,21 +84,22 @@ void AddSegy::convert() {
   updateBinaryHeader();
   initialTraceHeader();
 
-  out_.open(_key.outName + ".segy", std::ios::out | std::ios::binary);
+  out_.open(_key.outName, std::ios::out | std::ios::binary);
 
   writeTextHeader();
   out_.write(&binaryheader[0], 400);
 
-  std::vector<float> trace(_key.ns, 0);
+  std::vector<float> trace(_key.nt, 0);
   int64_t loc = 0;
-  for (int i = _key.sinline; i < (_key.sinline + _key.ninline); ++i) {
-    for (int j = _key.sxline; j < (_key.sxline + _key.nxline); ++j) {
+  for (int i = _key.sinline; i < (_key.sinline + _key.ni); ++i) {
+    for (int j = _key.sxline; j < (_key.sxline + _key.nx); ++j) {
       // x and y interval ~ 25 40 12.5
-      updateTraceHeader(i, j, 10000 + i * 2500, 10000 + j * 2500);
+      updateTraceHeader(i, j, 10000 + i * _key.dx * 100,
+                        10000 + j * _key.dy * 100);
       out_.write(&traceheader[0], 240);
       readTrace(trace, loc);
-      out_.write((char*)&trace[0], _key.ns * sizeof(float));
-      loc += (_key.ns * sizeof(float));
+      out_.write((char*)&trace[0], _key.nt * sizeof(float));
+      loc += (_key.nt * sizeof(float));
     }
   }
 }
@@ -114,17 +128,26 @@ void AddSegy::updateTextHeader() {
   replaceStr(textheader, s.str(), 80 * 4 + 36, 20);
 
   replaceStr(textheader, std::to_string(_key.sinline), 80 * 6 + 18, 6);
-  replaceStr(textheader, std::to_string(_key.sinline + _key.ninline - 1),
+  replaceStr(textheader, std::to_string(_key.sinline + _key.ni - 1),
              80 * 6 + 38, 6);
   replaceStr(textheader, std::to_string(_key.sxline), 80 * 7 + 18, 6);
-  replaceStr(textheader, std::to_string(_key.sxline + _key.nxline - 1),
-             80 * 7 + 38, 6);
-  replaceStr(textheader, std::to_string(_key.dt), 80 * 9 + 21, 6);
-  replaceStr(textheader, std::to_string(_key.ns), 80 * 10 + 38, 6);
+  replaceStr(textheader, std::to_string(_key.sxline + _key.nx - 1), 80 * 7 + 38,
+             6);
+
+  s.str("");
+  s << _key.nt << ", " << _key.nx << ", " << _key.ni;
+  replaceStr(textheader, s.str(), 80 * 9 + 17, 19);
+  replaceStr(textheader, std::to_string(_key.nt), 80 * 10 + 38, 6);
+  replaceStr(textheader, std::to_string(_key.dt), 80 * 11 + 21, 6);
+  s.str("");
+  s << "X interval: " << _key.dx << " meters, Y interval: " << _key.dy
+    << " meters";
+  replaceStr(textheader, s.str(), 80 * 12 + 4, 70);
+
   if (!_key.big_endian)
-    replaceStr(textheader, "LITTLE_ENDIAN", 80 * 11 + 17, 50);
+    replaceStr(textheader, "LITTLE_ENDIAN", 80 * 13 + 17, 50);
   if (_key.dtype == 1)  // 1 or 5
-    replaceStr(textheader, "4-byte IBM floating-point", 80 * 12 + 24, 50);
+    replaceStr(textheader, "4-byte IBM floating-point", 80 * 14 + 24, 50);
 
   if (_key.iloc == 5) {
     replaceStr(textheader, "5-8", 80 * 23 + 40, 20);
@@ -153,7 +176,7 @@ void AddSegy::updateBinaryHeader() {
   replaceStr(binaryheader, (int32_t)1, 8);
   replaceStr(binaryheader, (int16_t)1, 12);
   replaceStr(binaryheader, (int16_t)_key.dt, 16);
-  replaceStr(binaryheader, (int16_t)_key.ns, 20);
+  replaceStr(binaryheader, (int16_t)_key.nt, 20);
   replaceStr(binaryheader, (int16_t)_key.dtype, 24);
   replaceStr(binaryheader, (int16_t)1, 26);
   replaceStr(binaryheader, (int16_t)4, 28);
@@ -174,7 +197,7 @@ void AddSegy::initialTraceHeader() {
   replaceStr(traceheader, (int16_t)1, 68);
   replaceStr(traceheader, (int16_t)-100, 70);  // scale
   replaceStr(traceheader, (int16_t)1, 88);
-  replaceStr(traceheader, (int16_t)_key.ns, 114);
+  replaceStr(traceheader, (int16_t)_key.nt, 114);
   replaceStr(traceheader, (int16_t)_key.dt, 116);
   replaceStr(traceheader, (int16_t)1, 124);
   replaceStr(traceheader, (int16_t)1, 132);
@@ -209,7 +232,7 @@ void AddSegy::replaceStr(char* t, const std::string s, size_t start,
 
 void AddSegy::readTrace(std::vector<float>& trace, int64_t loc) {
   in_.seekg(loc, std::ios::beg);
-  in_.read((char*)&trace[0], _key.ns * sizeof(float));
+  in_.read((char*)&trace[0], _key.nt * sizeof(float));
 
   for (auto& i : trace) {
     if (1 == _key.dtype) {

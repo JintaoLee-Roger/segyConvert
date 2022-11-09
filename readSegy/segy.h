@@ -69,23 +69,20 @@ const std::map<unsigned char, char> kEBCDICtoASCIImap = {
 //      const std::string infile: input segy file name
 class SegyFile {
  public:
-  char textheader[3200];  // 3200 bytes text header, EBCDIC or ASCII format
-  std::fstream in_;
-  std::fstream out_;
-  binaryHeader binaryHeader_;
-  traceHeader th;
-  std::string outfile;
-
   SegyFile(const std::string infile);
   ~SegyFile();
 
   void printTextHeader();
   void getBinaryHeader();
   // set some parameters: storage location of in-line and cross-line number
+  void setInlineLoc(size_t iloc);
+  void setXlineLoc(size_t xloc);
   void setParameters(size_t iloc, size_t xloc);
   // override, add more parameters: in-line range and cross-line number range
   void setParameters(size_t iloc, size_t xloc, size_t imin, size_t imax,
                      size_t xmin, size_t xmax);
+  void setInlineRange(size_t imin, size_t imax);
+  void setXlineRange(size_t xmin, size_t xmax);
   // convert a segy file to a binary file
   void toDat(const std::string outfile = "out.dat", float fills = 0.0);
   // guess the storage location of in-line number and cross-line number
@@ -95,6 +92,13 @@ class SegyFile {
   void scan();
 
  private:
+  char textheader[3200];  // 3200 bytes text header, EBCDIC or ASCII format
+  std::fstream in_;
+  std::fstream out_;
+  binaryHeader binaryHeader_;
+  traceHeader th;
+  std::string outfile;
+
   // determine if the text header is EBCDIC format
   bool isTextInEBCDICFormat(const char* text);
   // convert a EBCDIC format char to ASCII format
