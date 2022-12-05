@@ -7,6 +7,9 @@
   </tr>
 </table>
 
+
+> 注意。此仓库已经被废弃，不再更新。请转移到新的更友好的仓库: [cigsegy](https://github.com/JintaoLee-Roger/cigsegy)
+
 一个使用 C++ 写的将**三维**地震数据在**segy格式**和**二进制格式**之间互相转换的工具，可以将三维地震数据从segy格式去道头、补全空道，最后转化为二进制格式的数据，也可以将二进制格式的数据添加道头信息，转化为segy格式的数据。
 
 segy format <------> binary format
