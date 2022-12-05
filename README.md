@@ -1,4 +1,4 @@
-# Note. This repository This repository is deprecated and has moved to a new and user-friendly repository: [cigsegy](https://github.com/JintaoLee-Roger/cigsegy).
+# Note: This repository is deprecated and has moved to a new and user-friendly repository: [cigsegy](https://github.com/JintaoLee-Roger/cigsegy).
 
 # segyConvert
 
