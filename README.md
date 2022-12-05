@@ -1,3 +1,5 @@
+# Note. This repository This repository is deprecated and has moved to a new and user-friendly repository: [cigsegy](https://github.com/JintaoLee-Roger/cigsegy).
+
 # segyConvert
 
 <table>
@@ -6,8 +8,6 @@
     <td><a href="./README_ZH.md">中文</a></td>
   </tr>
 </table>
-
-> Note. This repository has been abandoned and will not be updated. The new repository: [cigsegy](https://github.com/JintaoLee-Roger/cigsegy).
 
 A tool with C++ to read 3D seismic data in SEG-Y format 
 and convert 3D seismic data in binary format to SEG-Y format.
